@@ -1,0 +1,47 @@
+%% PID Tuner (Grid Search Method)
+clear all; close all;
+
+% Gain variations
+Kps = linspace(0.6, 1.2, 10);
+Kis = linspace(0.05, 0.2, 10);
+Kds = linspace(0.7, 1.2, 10);  
+
+Kf = 1e5;
+
+OPEN_LOOP_SYSTEMS = {};
+GAINS = {};
+% Loop and collect all variants
+for Kp = Kps
+    for Ki = Kis
+        for Kd = Kds
+         
+            OPEN_LOOP_SYSTEMS{end+1} = OPEN_LOOP_SYSTEM;;
+            GAINS{end+1} = [Kp Ki Kd];
+
+            stepprops = {};
+overshoots = [];
+settlingtimes = [];
+for i = 1:length(fwdloop_systems)
+    stepprops{i} = stepinfo(feedback(fwdloop_systems{i}, 1));
+    overshoots(i) = stepprops{i}.Overshoot;
+    settlingtimes(i) = stepprops{i}.SettlingTime;
+    % title(['Step Response for Kp = ' num2str(gains{i}(1)) ', Ki = ' num2str(gains{i}(2)) ', Kd = ' num2str(gains{i}(3))]);
+end
+overshoots = overshoots';
+settlingtimes = settlingtimes';
+% Compute bandwidths 
+bandwidths = [];
+for i=1:length(fwdloop_systems)
+    [mag,phase,wout] = nichols(fwdloop_systems{i});
+    mag = squeeze(mag); phase = squeeze(phase); wout = squeeze(wout);
+    mag = mag2db(mag);
+    woutf = omega_min:.01:omega_max; woutf = woutf';
+    magf = interp1(wout,mag,woutf);
+    ind = interp1(magf,1:length(magf),-3,'nearest');
+    bw = woutf(ind);
+    bandwidths(i) = bw;
+end
+bandwidths = bandwidths';
+        end
+    end
+end
