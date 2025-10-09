@@ -1,26 +1,14 @@
-%% PID Tuner (Grid Search Method)
-clear all; close all;
-warning off
-
-Ts = 0.1; % 10 Hz
-omega_min = 0.01; % Low enough for integrator behavior
-omega_max = pi / Ts * 0.95; % ~95% of Nyquist to avoid aliasing
-
-% Stability margins
-Gm_des = 8; % Desired gain margin
-Pm_des = 45; % Desired phase margin
+%% RW_PID_Tuner
+[] = RW_PID_Tuner(Ts,GM,PM,weights,delay,)
 
 % Gain variations
 Kps = linspace(0.6, 1.2, 10);
 Kis = linspace(0.05, 0.2, 10);
 Kds = linspace(0.7, 1.2, 10); 
 
-% LPF factor
+% LPF Design
 Kf = 1e5;
 
-OPEN_LOOP_SYSTEMS = cell(1,length(Kps)*length(Kis)*length(Kds));
-timedelay = i;
-w = [.1 .2 .2 .25 .25]; % Order of weights: bandwidth, overshoot, settling time, gain margin, phase margin
 tuner_data = struct();
 % Loop and collect all variants
 count = 1;
@@ -74,27 +62,4 @@ end
 
 % Find min cost gains
 [minCost, minIndex] = min([tuner_data.cost]);
-optimalGains = tuner_data(minIndex).gains;
-
-% % Display results for the optimal gains
-% tuner_data(minIndex).gainmargin
-% tuner_data(minIndex).phasemargin
-% tuner_data(minIndex).bandwidth
-% tuner_data(minIndex).overshoot
-% tuner_data(minIndex).settlingtime
-step(feedback(OPEN_LOOP_SYSTEMS{minIndex},1))
-% nichols(OPEN_LOOP_SYSTEMS{minIndex})
-
-% Find max cost gains
-% [maxCost, maxIndex] = max([tuner_data.cost]);
-% worstGains = tuner_data(maxIndex).gains;
-
-% % Display results for the worst gains
-% tuner_data(maxIndex).gainmargin
-% tuner_data(maxIndex).phasemargin
-% tuner_data(maxIndex).bandwidth
-% tuner_data(maxIndex).overshoot
-% tuner_data(maxIndex).settlingtime
-% step(feedback(OPEN_LOOP_SYSTEMS{maxIndex},1))
-% nichols(OPEN_LOOP_SYSTEMS{maxIndex})
-
+optimalControl = tuner_data(minIndex);
