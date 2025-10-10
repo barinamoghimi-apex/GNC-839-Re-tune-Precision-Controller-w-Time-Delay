@@ -1,0 +1,18 @@
+%% RW_PID_Tuner_Script
+
+weights = [.1 .2 .2 .25 .25]; % Order of weights: bandwidth, overshoot, settling time, gain margin, phase margin
+Ts = .1;
+GM = 8;
+PM = 45;
+
+figure;
+hold on
+grid on
+for i=0:3
+    delay = i;  
+    [PIDControl] = RW_PID_Tuner(Ts,GM,PM,weights,delay);
+    step(feedback(PIDControl.olsys,1))
+end
+
+legend('Zero Delay','One Cycle Delay','Two Cycle Delay','Three Cycle Delay')
+title('Step Response (Discrete): Optimal PID gains for 0-3 delay cycles','FontSize',24)

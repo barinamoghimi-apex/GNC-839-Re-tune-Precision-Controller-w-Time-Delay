@@ -67,6 +67,7 @@ for Kp = Kps
             tuner_data(count).bandwidth = bandwidth;
             tuner_data(count).gainmargin = Gm;
             tuner_data(count).phasemargin = Pm;
+            tuner_data(count).olsys = OPEN_LOOP_SYSTEM; 
             count = count + 1;
         end
     end
